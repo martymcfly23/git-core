@@ -13,12 +13,12 @@
 Summary:	Distributed version control system focused on speed, effectivity and usability
 Summary(pl.UTF-8):	Rozproszony system śledzenia treści skupiony na szybkości, wydajności i użyteczności
 Name:		git-core
-Version:	2.4.3
-Release:	1
+Version:	2.9.0
+Release:	2
 License:	GPL v2
 Group:		Development/Tools
-Source0:	http://www.kernel.org/pub/software/scm/git/git-%{version}.tar.gz
-# Source0-md5:	bde9fc7aa40560fe3b1c8b9c6d170db0
+Source0:	http://www.kernel.org/pub/software/scm/git/git-%{version}.tar.xz
+# Source0-md5:	118ef1e3108ef0b858cd13b74395a59c
 Source1:	%{name}-gitweb.conf
 Source2:	%{name}-gitweb-httpd.conf
 Source3:	%{name}-gitweb-lighttpd.conf
@@ -36,7 +36,11 @@ BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
 BuildRequires:	curl-devel
 BuildRequires:	expat-devel
+%if "%{pld_release}" == "ac"
+BuildRequires:	gettext-devel
+%else
 BuildRequires:	gettext-tools
+%endif
 %if %{with gnome_keyring}
 BuildRequires:	libgnome-keyring-devel
 BuildRequires:	pkgconfig
@@ -72,7 +76,6 @@ Conflicts:	pdksh < 5.2.14-46
 Requires:	grep
 # git-pull: printf
 Requires:	coreutils
-Requires:	openssh-clients
 Requires:	perl-Error
 Requires:	perl-Git = %{version}-%{release}
 Requires:	sed
@@ -82,6 +85,7 @@ Suggests:	git-core-hg
 Suggests:	git-core-p4
 Suggests:	git-core-svn
 Suggests:	less
+Suggests:	openssh-clients
 Suggests:	rsync
 Obsoletes:	python-Git
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -93,7 +97,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		webappdir	%{_sysconfdir}/webapps/%{webapp}
 %define		appdir		%{_datadir}/%{webapp}
 %define		cgibindir	%{_prefix}/lib/cgi-bin
-%define		gitcoredir	%{_libdir}/%{name}
+%define		gitcoredir	%{_prefix}/lib/%{name}
+%define		_libexecdir	%{_prefix}/lib
 
 %description
 "git" can mean anything, depending on your mood.
@@ -132,15 +137,15 @@ katalogu.
 Summary:	Documentation for git-core
 Summary(pl.UTF-8):	Dokumentacja do git-core
 Group:		Documentation
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description doc
 Documentation for git-core.
 
 %description doc -l pl.UTF-8
 Dokumentacja do git-core.
-
-%description doc -l fr.UTF-8
-Javadoc pour git-core.
 
 %package daemon-inetd
 Summary:	Files necessary to run git-daemon as an inetd service
@@ -151,6 +156,9 @@ Requires:	setup >= 2.4.11-1
 Provides:	git-core-daemon
 Obsoletes:	git-core-daemon
 Obsoletes:	git-core-daemon-standalone
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description daemon-inetd
 Git-daemon is a really simple TCP git daemon that can serve git
@@ -170,6 +178,9 @@ Requires:	%{name} = %{version}-%{release}
 Provides:	git-core-daemon
 Obsoletes:	git-core-daemon
 Obsoletes:	git-core-daemon-inetd
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description daemon-standalone
 Git-daemon is a really simple TCP git daemon that can serve git
@@ -199,6 +210,9 @@ Summary(pl.UTF-8):	Napisany w Tcl/Tk interfejs do systemu kontroli wersji Git
 Group:		Development/Tools
 Requires:	%{name} = %{version}-%{release}
 Requires:	tk
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description gitk
 gitk displays changes in a repository or a selected set of commits.
@@ -229,6 +243,9 @@ Requires:	webserver(access)
 Requires:	webserver(alias)
 Requires:	webserver(cgi)
 Suggests:	webserver(setenv)
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description gitweb
 This package provides a web interface for browsing git repositories.
@@ -246,6 +263,9 @@ Requires:	python-pycairo >= 1.0
 Requires:	python-pygobject
 Requires:	python-pygtk-gtk >= 2:2.8
 Suggests:	python-gnome-desktop-gtksourceview
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description gitview
 A GTK+ based repository browser for git.
@@ -261,6 +281,9 @@ Requires:	%{name} = %{version}-%{release}
 Requires:	tk
 Requires:	xdg-utils
 Suggests:	meld
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description gui
 Displays changes in a repository or a selected set of commits. This
@@ -287,6 +310,9 @@ Summary(pl.UTF-8):	Narzędzia Gita do importowania repozytoriów Archa
 Group:		Development/Tools
 Requires:	%{name} = %{version}-%{release}
 Requires:	tla
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description arch
 Git tools for importing Arch repositories.
@@ -300,6 +326,9 @@ Summary(pl.UTF-8):	Narzędzia Gita do pracy z repozytoriami bzr
 Group:		Development/Tools
 Requires:	%{name} = %{version}-%{release}
 Requires:	bzr
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description bzr
 Git tools for working with bzr repositories.
@@ -314,6 +343,9 @@ Group:		Development/Tools
 Requires:	%{name} = %{version}-%{release}
 Requires:	cvsps >= 2.1-2
 Requires:	rcs
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description cvs
 CVS support for Git.
@@ -327,6 +359,9 @@ Summary(pl.UTF-8):	Narzędzia Gita do pracy z repozytoriami mercuriala
 Group:		Development/Tools
 Requires:	%{name} = %{version}-%{release}
 Requires:	mercurial >= 1.8
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description hg
 Git tools for working with mercurial repositories.
@@ -339,6 +374,9 @@ Summary:	Git tools for working with Perforce depots
 Summary(pl.UTF-8):	Narzędzia Gita do pracy z magazynami Perforce'a
 Group:		Development/Tools
 Requires:	%{name} = %{version}-%{release}
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description p4
 Git tools for working with Perforce depots.
@@ -393,6 +431,9 @@ Summary:	Perl interface to the Git version control system
 Summary(pl.UTF-8):	Perlowy interfejs do systemu kontroli wersji Git
 Group:		Development/Languages/Perl
 Obsoletes:	perl-git-core
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description -n perl-Git
 This module provides Perl scripts easy way to interface the Git
@@ -556,14 +597,31 @@ cp -p %{SOURCE5} $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/git-daemon
 install -p %{SOURCE6} $RPM_BUILD_ROOT/etc/rc.d/init.d/git-daemon
 
 # paths cleanup
-sed -e 's,@libdir@,%{_libdir},g' -i $RPM_BUILD_ROOT/etc/rc.d/init.d/git-daemon
-sed -e 's,@libdir@,%{_libdir},g' -i $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/git-daemon
+sed -e 's,@libdir@/git-core,%{gitcoredir},g' -i $RPM_BUILD_ROOT/etc/rc.d/init.d/git-daemon
+sed -e 's,@libdir@/git-core,%{gitcoredir},g' -i $RPM_BUILD_ROOT/etc/sysconfig/rc-inetd/git-daemon
 
-# hardlink
-ln -f $RPM_BUILD_ROOT%{_bindir}/{git,git-receive-pack}
-ln -f $RPM_BUILD_ROOT%{_bindir}/{git,git-upload-archive}
-ln -f $RPM_BUILD_ROOT{%{gitcoredir},%{_bindir}}/git-shell
-ln -f $RPM_BUILD_ROOT{%{gitcoredir},%{_bindir}}/git-upload-pack
+# same file, link
+ln -sf git $RPM_BUILD_ROOT%{_bindir}/git-receive-pack
+ln -sf git $RPM_BUILD_ROOT%{_bindir}/git-upload-archive
+ln -sf ../..%{gitcoredir}/git-shell $RPM_BUILD_ROOT%{_bindir}/git-shell
+ln -sf ../..%{gitcoredir}/git-upload-pack $RPM_BUILD_ROOT%{_bindir}/git-upload-pack
+ln -sf ../..%{gitcoredir}/git $RPM_BUILD_ROOT%{_bindir}/git
+
+# convert all hardlinks to symlinks, as rpm fails to calculate it properly
+# requiring excessive free space when it may not be available
+# https://bugs.launchpad.net/pld-linux/+bug/1176337
+find $RPM_BUILD_ROOT%{gitcoredir} -samefile $RPM_BUILD_ROOT%{gitcoredir}/git > files
+for f in $(cat files); do
+	f=${f#$RPM_BUILD_ROOT%{gitcoredir}/}
+	test $f = git && continue
+	ln -snf git $RPM_BUILD_ROOT%{gitcoredir}/$f
+done
+
+# few others
+ln -snf git-gui $RPM_BUILD_ROOT%{gitcoredir}/git-citool
+ln -snf git-remote-http $RPM_BUILD_ROOT%{gitcoredir}/git-remote-https
+ln -snf git-remote-http $RPM_BUILD_ROOT%{gitcoredir}/git-remote-ftp
+ln -snf git-remote-http $RPM_BUILD_ROOT%{gitcoredir}/git-remote-ftps
 
 # remove unneeded files
 %{__rm} $RPM_BUILD_ROOT%{perl_archlib}/perllocal.pod
@@ -614,7 +672,7 @@ fi
 
 %files -f git.lang
 %defattr(644,root,root,755)
-%doc README contrib-doc
+%doc README.md contrib-doc
 %attr(755,root,root) %{_bindir}/git
 %attr(755,root,root) %{_bindir}/git-receive-pack
 %attr(755,root,root) %{_bindir}/git-shell
@@ -803,6 +861,12 @@ fi
 %if %{with doc}
 %{_mandir}/man1/git-svn.1*
 %endif
+%{_mandir}/man3/Git::SVN::Editor.3pm*
+%{_mandir}/man3/Git::SVN::Fetcher.3pm*
+%{_mandir}/man3/Git::SVN::Memoize::YAML.3pm*
+%{_mandir}/man3/Git::SVN::Prompt.3pm*
+%{_mandir}/man3/Git::SVN::Ra.3pm*
+%{_mandir}/man3/Git::SVN::Utils.3pm*
 
 %files email
 %defattr(644,root,root,755)
@@ -823,7 +887,8 @@ fi
 %dir %{perl_vendorlib}/Git
 %{perl_vendorlib}/Git/I18N.pm
 %{perl_vendorlib}/Git/IndexInfo.pm
-%{_mandir}/man3/Git*.3pm*
+%{_mandir}/man3/Git.3pm*
+%{_mandir}/man3/Git::I18N.3pm*
 
 %if %{with gnome_keyring}
 %files -n gnome-keyring-git-core
